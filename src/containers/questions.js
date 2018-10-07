@@ -7,7 +7,7 @@ import Result from '../containers/results'
 class Questions extends Component{
     constructor (props) {
         super(props)
-        this.state = {count: 0, result:0, tabledata: {question:[], myAnswer:[], correctAnswer:[]}}
+        this.state = {count: 0, result:0, tabledata: {question:[], myAnswer:[], correctAnswer:[], status: []}}
       }
       componentWillUnmount () {
         clearInterval(this.timer)
@@ -31,7 +31,7 @@ class Questions extends Component{
             return(
                 <tr key={index}>
                     <td> {content} </td>
-                    <td> {this.state.tabledata.myAnswer[index]} </td>
+                    <td className={this.state.tabledata.status[index]} > {this.state.tabledata.myAnswer[index]} </td>
                     <td> {this.state.tabledata.correctAnswer[index]} </td>
                 </tr>
             )
@@ -48,6 +48,10 @@ class Questions extends Component{
                     if(answers[c].name == category.q){
                         if(answers[c].value == category.ca){
                             this.setState({result: (++this.state.result)})
+                            this.state.tabledata.status.push('light-green-text accent-3-text')
+                        }
+                        else{
+                            this.state.tabledata.status.push('red-text accent-3-text')
                         }
                         this.state.tabledata.question.push(category.q)
                         this.state.tabledata.myAnswer.push(answers[c].value)
