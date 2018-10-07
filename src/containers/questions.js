@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Row, Input} from 'react-materialize';
-import {Button} from 'react-materialize';
+import {Button, Table} from 'react-materialize';
 import Result from '../containers/results'
 
 class Questions extends Component{
     constructor (props) {
         super(props)
-        this.state = {count: 0, result:0}
+        this.state = {count: 0, result:0, tabledata: {question:[], myAnswer:[], correctAnswer:[]}}
       }
       componentWillUnmount () {
         clearInterval(this.timer)
@@ -26,13 +26,32 @@ class Questions extends Component{
         }
       }
 
+      showResult(){
+        return this.state.tabledata.question.map((content, index) => {
+            return(
+                <tr key={index}>
+                    <td> {content} </td>
+                    <td> {this.state.tabledata.myAnswer[index]} </td>
+                    <td> {this.state.tabledata.correctAnswer[index]} </td>
+                </tr>
+            )
+        })
+        
+      }
+
     checkResult(answers){
+        
         clearInterval(this.timer)
         let c = 0;
             for (; c < answers.length; c++) {
                 this.props.category.questions.map((category)=>{
-                    if(answers[c].name == category.q && answers[c].value == category.ca){
-                        this.setState({result: (++this.state.result)})
+                    if(answers[c].name == category.q){
+                        if(answers[c].value == category.ca){
+                            this.setState({result: (++this.state.result)})
+                        }
+                        this.state.tabledata.question.push(category.q)
+                        this.state.tabledata.myAnswer.push(answers[c].value)
+                        this.state.tabledata.correctAnswer.push(category.ca)
                     }
                 })
                 
@@ -84,6 +103,21 @@ class Questions extends Component{
                 </div>
                 <div id="resultGoto" className="hide">
                     <Result result = {this.state.result} />
+
+                    <h3>Questions You Have Attempted: </h3>
+                    <Table>
+                    <thead>
+                        <tr>
+                        <th data-field="Question">Question</th>
+                        <th data-field="Your Answer">Your Answer</th>
+                        <th data-field="Correct Answer">Correct Answer</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {this.showResult()}
+                    </tbody>
+                    </Table>
                 </div>
             </div> 
         );
